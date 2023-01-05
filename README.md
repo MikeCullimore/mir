@@ -13,6 +13,7 @@ pip install -r requirements.txtpip
 
 ## todo
 
+* Save plots to file.
 * Analyse songs in data folder:
     * Chromagram
     * Audio thumbnail
@@ -21,3 +22,4 @@ pip install -r requirements.txtpip
     * Tempo analysis
     * Separate harmonic and percussive, save to files, listen (and adjust params if need be).
 * Add songs to data folder: Beatles, White Stripes.
+* Get PySoundFile working for load?
