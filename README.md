@@ -34,7 +34,7 @@ pip install -r requirements.txtpip
 * Get PySoundFile working for load?
 * Use [Viterbi](https://librosa.org/doc/main/auto_examples/plot_viterbi.html#sphx-glr-auto-examples-plot-viterbi-py) to truncate silence at beginning and end (only).
 * Use [Laplacian segmentation](https://librosa.org/doc/main/auto_examples/plot_segmentation.html#sphx-glr-auto-examples-plot-segmentation-py) to identify and label song sections (verse, chorus etc.).
-* Play audio with vertical line sweeping through plot (e.g. chroma) in sync.
+* Play audio with vertical line sweeping through plot (e.g. chroma) in sync. See FMP toolbox in [YouTube demo](https://youtu.be/g1H-7773gpo).
 
 ## Useful links
 
