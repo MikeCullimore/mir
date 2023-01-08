@@ -1,3 +1,5 @@
+import os.path
+
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
@@ -5,9 +7,12 @@ import numpy as np
 
 def main():
     # todo: replace with regex search for all files in data folder.
-    # filepaths = ['data/03_automatic_stop.mp3']
-    filepaths = ['data/Four Out Of Five.wav'] # todo: analyse 4-16s piano intro, chord detection. Chord or melody?
-    for filepath in filepaths:
+    folder = 'data'
+    # filenames = ['03_automatic_stop.mp3']
+    # filenames = ['Four Out Of Five.wav']
+    filenames = ['c-major-scale.ogg']
+    for filename in filenames:
+        filepath = os.path.join(folder, filename)
         analyse_audio(filepath)
 
 def analyse_audio(filepath):
@@ -28,10 +33,10 @@ def analyse_audio(filepath):
     # finish = 16
     idx = tuple([slice(None), slice(*list(librosa.time_to_frames([start, finish])))])
 
-    # # Plot waveform
-    # fig, ax = plt.subplots()
-    # librosa.display.waveshow(y, sr=sr, ax=ax)
-    # plt.show()
+    # Plot waveform
+    fig, ax = plt.subplots()
+    librosa.display.waveshow(y, sr=sr, ax=ax)
+    plt.show()
 
     # # todo: harmonic/percussive separation.
     # # harmonic, percussive = librosa.decompose.hpss()
@@ -62,8 +67,9 @@ def analyse_audio(filepath):
     # plt.show()
 
     # NMF
-    # todo: configure so that the components are equal temperament, A4 = 440Hz.
-    # todo: shift tuning (A4) to optimise template matching. But are glitchy activations down to vibrato?
+    # todo: STFT as input instead of CQT?
+    # todo: configure so that the components are equal temperament, A4 = 440Hz (think piano keys).
+    # todo: shift tuning (A4) to optimise template matching. But are glitchy activations down to vibrato? Also tuning is automatically estimated from the signal, see https://librosa.org/doc/latest/generated/librosa.cqt.html
     # todo: axis labels (note scientific names).
     # for n_steps in np.linspace(-1, 1, 7):
         # y_shift = librosa.effects.pitch_shift(y, sr=sr, n_steps=-0.1) # todo: optimise n_steps for clean activations.
@@ -77,7 +83,7 @@ def analyse_audio(filepath):
     # ax[0].set_xlabel('Note')
     # ax[0].set_ylabel('Frequency [Hz]')
     ax[1].set_title('Activations')
-    fig.suptitle('Identiyfing note activations via NMF. Input: Four out of Five')
+    fig.suptitle(f'Identiyfing note activations via NMF. Input: {filepath}')
     plt.show()
 
 if __name__ == '__main__':
