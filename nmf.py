@@ -6,6 +6,12 @@ Aim is to generate a piano roll plot for the C major scale (notes/pitches/freque
 https://www.audiolabs-erlangen.de/resources/MIR/FMP/C8/C8S3_NMFSpecFac.html
 
 todo:
+Apply to other audio files:
+    Automate A4 tuning optimisation.
+    Optimise tol_pitch (width of bands in pitch templates).
+Improve template_pitch:
+    Frequency band widths should be monotonically increasing with MIDI note number.
+    Gaussian envelope for each band not rectangular.
 Manual post-processing:
     Shuffle the order of the matrices so the activations look like the desired output.
     Matrices are different each time so save and reload!
@@ -112,12 +118,11 @@ def main():
     # plt_show_max()
 
     n = 20
-    A4s = np.linspace(440, 448, n)
+    tps = np.linspace(0.005, 0.05, n)
     errors = []
-    for A4 in A4s:
+    for tol_pitch in tps:
         # Initialise pitch templates with piano key frequencies and their harmonics.
         # If the tuning in the recording is not A4 = 440Hz, the results will be worse.
-        # todo: just the C major scale!
         # pitch_set = np.arange(60, 73) # Pitch set: MIDI note numbers.
         pitch_set = np.array([60, 62, 64, 65, 67, 69, 71, 72]) # MIDI note numbers for C major scale.
         K = V.shape[0]
@@ -125,7 +130,8 @@ def main():
         R = pitch_set.shape[0]
         freq_res = Fs / N_fft
         # W_init = libfmp.c8.init_nmf_template_pitch(K, pitch_set, freq_res, tol_pitch=0.05)
-        W_init = init_nmf_template_pitch(K, pitch_set, freq_res, tol_pitch=0.01, A4=A4) # todo: try varying A4 in template_pitch above to get better result. Ditto tol_pitch.
+        A4 = 444 # Tuning frequency estimated by minimising lstsq error, see commit 412626e.
+        W_init = init_nmf_template_pitch(K, pitch_set, freq_res, tol_pitch=tol_pitch, A4=A4) # todo: try varying A4 in template_pitch above to get better result. Ditto tol_pitch.
         H_init = np.random.rand(R,N)
 
         # plot_W(W_init)
@@ -133,26 +139,27 @@ def main():
         # todo: sort W by fundamental frequency, apply same permutation to H.
         # np.savetxt("W_init.csv", W_init, delimiter=",")
         
-        # todo: simpler alternative: keep pitch templates fixed, solve V=W*H by least squares. Doesn't work: why?
+        # Simpler alternative: keep pitch templates fixed, solve V=W*H by least squares.
+        # todo: optimise tol_pitch.
         # todo: improve pitch templates: Gaussian spread centred on fundamental frequency, width proportional to frequency.
         # todo: alternative pitch templates: slices from spectrogram.
         # todo: plot overlay pitch templates with corresponding note onsets in original FT.
-        # todo: shift tuning to match frequencies (get result from libfmp method that does this automatically?).
-        # todo: play back reconstructed V: any clues?
+        # todo: play back reconstructed V (first do inverse FT).
         # todo: plot residuals V - W_init.dot(H_lstsq).
+        # todo: change axis labels from MIDI note numbers to note names.
         H_lstsq, resid, rank, s = np.linalg.lstsq(W_init, V, rcond=None)
         error = np.linalg.norm(resid)
         errors.append(error)
-        print(f'Fit error: {error}')
+        # print(f'Fit error: {error}')
         # print(H_lstsq.shape)
-        # libfmp.c8.plot_nmf_factors(W_init, H_lstsq, W_init.dot(H_lstsq), Fs, N_fft, H_fft, freq_max, label_pitch=pitch_set)
+        libfmp.c8.plot_nmf_factors(W_init, H_lstsq, W_init.dot(H_lstsq), Fs, N_fft, H_fft, freq_max, label_pitch=pitch_set, title_W='pitch templates', title_H='onsets/activations', title_V='Reconstructed spectrogram')
     
     plt.figure()
-    plt.plot(A4s, errors)
-    plt.title('Estimation of tuning frequency, Four out of Five')
-    plt.xlabel('A4 frequency [Hz]')
+    plt.plot(tps, errors)
+    plt.xlabel('tol_pitch [Hz?]')
     plt.ylabel('Fit error')
-    plt_show_max()
+    plt.title('Optimisation of pitch tolerance (for templates)')
+    plt.show()
 
     return # tmp
     
