@@ -42,3 +42,6 @@ pip install -r requirements.txtpip
 * [Constant-Q transform](https://en.wikipedia.org/wiki/Constant-Q_transform)
 * [Non-negative matrix factorization](https://en.wikipedia.org/wiki/Non-negative_matrix_factorization)
 * [Short-time Fourier transform](https://en.wikipedia.org/wiki/Short-time_Fourier_transform)
+* [Spotify audio to MIDI](https://engineering.atspotify.com/2022/06/meet-basic-pitch/)
+* [MAESTRO dataset](https://magenta.tensorflow.org/datasets/maestro#v300): pairs of piano recordings and MIDI annotations
+* [GuitarSet](https://guitarset.weebly.com/): annotated guitar recordings
